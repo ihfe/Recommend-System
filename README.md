@@ -1,8 +1,6 @@
 **README是个人对论文的总结，和项目无关**
 
-# DIN
-
-#### 📌DIN论文需要掌握的知识
+### 📌DIN论文需要掌握的知识
 
 论文关键掌握：**摘要、架构、PReLU、Dice、Mini-Batch-aware-Regulazation**
 
@@ -17,7 +15,7 @@
 
 
 
-#### 📌SIM论文需要掌握的知识
+### 📌SIM论文需要掌握的知识
 
 论文关键掌握：**解决的问题、其他模型的缺陷、General Search Unit、Exact Search Unit**
 
