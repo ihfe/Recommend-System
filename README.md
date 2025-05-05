@@ -1,0 +1,36 @@
+# DIN
+
+#### 📌DIN论文需要掌握的知识
+
+论文关键掌握：**摘要、架构、PReLU、Dice、Mini-Batch-aware-Regulazation**
+
+- 【摘要】传统的CTR解决方式就是：使用基于深度学习的模型，将**大规模稀疏输入特征**映射为**低维向量**，然后以分组（我理解的分组就是稀疏、稠密这种）的方式**转换成定长向量**，最后**拼接**起来输入到`MLP`中，以学习特征之间的非线性关系。但是，无论候选广告是什么，用户特征都会被压缩成一个固定长度的表示向量。固定长度向量的使用将是一个瓶颈，模型难以从丰富的历史行为中有效捕捉用户的不同兴趣，于是提出`DIN`。另外，为了帮助训练近亿级别的参数量，提出`Mini-Batch-aware-Regulazation`和`data Adaptive activation function`
+
+- 【模型架构】1️⃣`Activation Unit`: 用户历史行为`embedding1`和候选广告`embedding2`做外积，结果是一个向量；将`embedding1`，`embedding2`和输出结果三者拼接，送入全连接层，最后得到兴趣权重$w_j$（标量）。2️⃣用户行为序列中的每个行为都会产生一个权重，将产生的权重$w_j$和对应的行为$e_j$相乘，然后做`sum pooling`，这样我们就得到了基于兴趣的用户行为特征向量表示。最后我们将用户画像特征、基于兴趣的用户行为特征、候选广告、上下文特征**拼接**送入`MLP`中，`Softmax`得到结果。
+
+  核心公式：
+
+$$
+\mathbf{v}_U(A) = f(\mathbf{v}_A, \mathbf{e}_1, \mathbf{e}_2, \ldots, \mathbf{e}_H)
+= \sum_{j=1}^{H} a(\mathbf{e}_j, \mathbf{v}_A) \mathbf{e}_j
+= \sum_{j=1}^{H} w_j \mathbf{e}_j
+$$
+
+- 【`PRelU`和`Dice`】1️⃣`PRelU`和`Dice`二者都有一个自适应的激活函数，也就是说都有一个**控制函数**；`PRelU`的控制函数比较简单，输入$x$大于0度时候函数值为1，$x$小于0的时候函数值为0；这也是它的缺点：分界点总是0，这是一个硬性分解【但是在实际训练中，每层输入$x$的分布是不同的，零可能不是最合适的分界点】2️⃣而`Dice`中的控制函数，是一个s型曲线，实现了软切换。工作机制：如果x比当前`mini-batch`的平均值大很多，说明该输入是高激活——p(x)趋向于1，函数趋近于f(x)=$x$；如果$x$比当前`mini-batch`的平均值小很多，说明该输入是低激活——p(x)趋向于0，函数趋近于f(x) = $α$*$x$
+- 【`Mini-Batch-aware-Regulazation`】工业级广告推荐系统中，输入特征：稀疏+维度高（6亿维）；1️⃣**传统正则化(L1/L2)的挑战：**在大规模稀疏输入的场景下，每个`mini-batch`仅激活少量参数（如几十个商品ID），大多数特征在一个`batch`中根本没出现，若强行对所有参数做L2计算，需要访问全部`Embedding`矩阵，计算开销太大。2️⃣`Mini-Batch-aware-Regulazation`：只对当前`mini-batch`中真正出现的特征对应的 `embedding`向量加正则，并做归一化处理。
+- 论文地址: https://arxiv.org/pdf/1706.06978
+
+
+
+#### 📌SIM论文需要掌握的知识
+
+论文关键掌握：**解决的问题、其他模型的缺陷、General Search Unit、Exact Search Unit**
+
+- 【解决的问题】主要解决传统CTR模型在面对**超长用户行为序列时难以精确建模兴趣**的问题；用户历史行为序列很长就会导致：计算量大；存储难；
+
+- 1️⃣`MIMN(Memory Interaction Network)` 
+
+
+
+- 论文地址：https://arxiv.org/pdf/2006.05639
+
